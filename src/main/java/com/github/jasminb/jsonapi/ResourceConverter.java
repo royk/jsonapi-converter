@@ -1,6 +1,7 @@
 package com.github.jasminb.jsonapi;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -411,15 +412,14 @@ public class ResourceConverter {
 		return data != null && data.isArray();
 	}
 
+	public String writeJsonObject(Object object)  throws JsonProcessingException, IllegalAccessException {
+		ObjectNode o = writeObjectToObjectNode(object);
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.getFactory().configure(JsonGenerator.Feature.ESCAPE_NON_ASCII, true);
+		return mapper.writeValueAsString(o);
+	}
 
-	/**
-	 * Converts input object to byte array.
-	 * @param object input object
-	 * @return raw bytes
-	 * @throws JsonProcessingException
-	 * @throws IllegalAccessException
-	 */
-	public byte [] writeObject(Object object) throws JsonProcessingException, IllegalAccessException {
+	private ObjectNode writeObjectToObjectNode(Object object)  throws JsonProcessingException, IllegalAccessException {
 		ObjectNode result = objectMapper.createObjectNode();
 
 		// Perform initial conversion
@@ -501,8 +501,17 @@ public class ResourceConverter {
 				dataNode.set(RELATIONSHIPS, relationshipsNode);
 			}
 		}
-
-		return objectMapper.writeValueAsBytes(result);
+		return result;
+	}
+	/**
+	 * Converts input object to byte array.
+	 * @param object input object
+	 * @return raw bytes
+	 * @throws JsonProcessingException
+	 * @throws IllegalAccessException
+	 */
+	public byte [] writeObject(Object object) throws JsonProcessingException, IllegalAccessException {
+		return objectMapper.writeValueAsBytes(writeObjectToObjectNode(object));
 	}
 
 	/**

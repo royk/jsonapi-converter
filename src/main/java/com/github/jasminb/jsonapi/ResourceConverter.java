@@ -419,7 +419,7 @@ public class ResourceConverter {
 		return mapper.writeValueAsString(o);
 	}
 
-	private ObjectNode writeObjectToObjectNode(Object object)  throws JsonProcessingException, IllegalAccessException {
+	public ObjectNode writeObjectToObjectNode(Object object)  throws JsonProcessingException, IllegalAccessException {
 		ObjectNode result = objectMapper.createObjectNode();
 
 		// Perform initial conversion
